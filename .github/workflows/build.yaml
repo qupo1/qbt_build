@@ -226,7 +226,8 @@ jobs:
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_CXX_STANDARD=20 ^
             -DCMAKE_INSTALL_PREFIX="../../libtorrent" -DBUILD_SHARED_LIBS=OFF -Dbuild_tests=OFF ^
             -Dbuild_examples=OFF -Dbuild_tools=OFF -Dpython-bindings=OFF -Dencryption=ON -Ddeprecated-functions=OFF ^
-            -Dstatic_runtime=OFF -DOPENSSL_ROOT_DIR="../../openssl" -DOPENSSL_USE_STATIC_LIBS=ON -DBOOST_ROOT="../../boost"
+            -Dstatic_runtime=OFF -DOPENSSL_ROOT_DIR="${{ github.workspace}}\openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
+            -DBOOST_ROOT="${{ github.workspace }}\boost"
           cmake --build . --parallel
           cmake --install .
   build-qbittorrent:
@@ -281,8 +282,10 @@ jobs:
           cd _build
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_CXX_STANDARD=20 ^
             -DCMAKE_INSTALL_PREFIX="../../qbittorrent" -DDBUS=OFF -DMSVC_RUNTIME_DYNAMIC=ON -DSTACKTRACE=OFF -DWEBUI=OFF ^
-            -DZLIB_ROOT="../../zlib" -DZLIB_USE_STATIC_LIBS=ON -DOPENSSL_ROOT_DIR="../../openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
-            -DBOOST_ROOT="../../boost" -DCMAKE_PREFIX_PATH="../../qt" -DLibtorrentRasterbar_DIR="../../libtorrent/lib/cmake/LibtorrentRasterbar"
+            -DZLIB_ROOT="${{ github.workspace }}\zlib" -DZLIB_USE_STATIC_LIBS=ON ^
+            -DOPENSSL_ROOT_DIR="${{ github.workspace }}\openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
+            -DBOOST_ROOT="${{ github.workspace }}\boost" -DCMAKE_PREFIX_PATH="${{ github.workspace }}\qt" ^
+            -DLibtorrentRasterbar_DIR="${{ github.workspace }}\libtorrent\lib\cmake\LibtorrentRasterbar"
           cmake --build . --parallel
           cmake --install .
       - name: Upload artifacts
