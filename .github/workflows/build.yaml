@@ -152,8 +152,8 @@ jobs:
         env:
           CC: ${{ env.CLANG }}
           CXX: ${{ env.CLANG }}
-          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
-          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-fexceptions
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D QT_NO_EXCEPTIONS
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D QT_NO_EXCEPTIONS
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           mkdir qt_build
