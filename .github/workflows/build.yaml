@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024121500
+  app_ver: 2024121699
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.2
@@ -89,8 +89,8 @@ jobs:
       - name: Build OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
         env:
-          CFLAGS: ${{ env.CFLAGS }} /MP /GL /Zc:preprocessor
-          CXXFLAGS: ${{ env.CFLAGS }} /MP /GL /Zc:preprocessor
+          CFLAGS: ${{ env.CFLAGS }} /MP /Zc:preprocessor
+          CXXFLAGS: ${{ env.CFLAGS }} /MP /Zc:preprocessor
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output openssl.tar.gz --location "https://github.com/openssl/openssl/releases/download/openssl-${{ env.openssl_ver }}/openssl-${{ env.openssl_ver }}.tar.gz"
