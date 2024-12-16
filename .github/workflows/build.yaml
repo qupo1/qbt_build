@@ -19,8 +19,10 @@ env:
   boost_ver: 1.87.0
   libtorrent_ver: 20241210
   vcvarsall: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
-  CFLAGS: /nologo /arch:AVX2 /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /MP /GL /Zc:preprocessor
+  CFLAGS: /nologo /arch:AVX2 /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /O2
   LDFLAGS: /NOLOGO /Brepro /LTCG /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT
+  CLANG: C:\Program Files\LLVM\bin\clang-cl.exe
+  CLANG_FLAGS: -fcf-protection=full -flto=full /clang:-fuse-ld=lld /clang:-fstack-protector-strong /clang:-fstrict-flex-arrays=3 /clang:-fno-delete-null-pointer-checks /clang:-ftrivial-auto-var-init=zero
 
 jobs:
   delete-caches:
@@ -47,15 +49,18 @@ jobs:
         with:
           path: zlib
           key: zlib-${{ env.zlib_ver }}-${{ github.ref_name }}
-      - name: Install Ninja
+      - name: Install Ninja and LLVM
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         run: |
           choco install --no-progress ninja
+          choco upgrade --no-progress llvm
       - name: Build zlib
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
-          CFLAGS: ${{ env.CFLAGS }} /O2
-          CXXFLAGS: ${{ env.CFLAGS }} /O2
+          CC: ${{ env.CLANG }}
+          CXX: ${{ env.CLANG }}
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output zlib.tar.gz --location "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.zlib_ver }}.tar.gz"
@@ -84,8 +89,8 @@ jobs:
       - name: Build OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
         env:
-          CFLAGS: ${{ env.CFLAGS }} /O2
-          CXXFLAGS: ${{ env.CFLAGS }} /O2
+          CFLAGS: ${{ env.CFLAGS }} /MP /GL /Zc:preprocessor
+          CXXFLAGS: ${{ env.CFLAGS }} /MP /GL /Zc:preprocessor
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output openssl.tar.gz --location "https://github.com/openssl/openssl/releases/download/openssl-${{ env.openssl_ver }}/openssl-${{ env.openssl_ver }}.tar.gz"
@@ -126,29 +131,39 @@ jobs:
         with:
           path: qt
           key: qt-${{ env.qt_ver }}-${{ github.ref_name }}
-      - name: Install Ninja
+      - name: Install Ninja and LLVM
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
           choco install --no-progress ninja
-      - name: Build Qt
+          choco upgrade --no-progress llvm
+      - name: Fetch Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
-        env:
-          CFLAGS: ${{ env.CFLAGS }}
-          CXXFLAGS: ${{ env.CFLAGS }}
         run: |
-          call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           git clone --branch ${{ env.qt_ver }} --depth 1 https://code.qt.io/qt/qt5.git qt_source
           cd qt_source
           call .\init-repository.bat --quiet --no-optional-deps --module-subset=qtbase,qtsvg,qttools
-          cd ..
+      - name: Modify Qt sources
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          sed -i 's/Q_OS_VXWORKS/_MSC_VER/g' qt_source/qtbase/src/corelib/global/qsystemdetection.h
+      - name: Build Qt
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        env:
+          CC: ${{ env.CLANG }}
+          CXX: ${{ env.CLANG }}
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
+        run: |
+          call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           mkdir qt_build
           cd qt_build
-          call ..\qt_source\configure.bat -prefix "../qt" -release -static -platform win32-msvc -no-sbom -ltcg -intelcet ^
+          call ..\qt_source\configure.bat -prefix "../qt" -release -static -platform win32-clang-msvc -no-sbom -ltcg -intelcet ^
             -disable-deprecated-up-to 0x060500 -no-vcpkg -submodules qtbase,qtsvg,qttools -nomake examples -nomake tests ^
             -no-dbus -no-glib -no-inotify -no-icu -system-zlib -no-system-proxies -no-fontconfig -no-gtk -no-opengl ^
             -no-xcb-xlib -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-mimer ^
             -sql-sqlite -c++std c++20 -no-feature-printsupport -no-feature-testlib -no-feature-assistant -no-feature-qdoc ^
-            -no-feature-designer -no-feature-distancefieldgenerator -no-feature-pixeltool -no-feature-qdbus ^
+            -no-feature-designer -no-feature-distancefieldgenerator -no-feature-pixeltool -no-feature-qdbus -no-openssl ^
             -no-feature-qtattributionsscanner -no-feature-qtdiag -no-feature-qtplugininfo CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ^
             ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON
           cmake --build . --parallel
@@ -164,15 +179,18 @@ jobs:
         with:
           path: boost
           key: boost-${{ env.boost_ver }}-${{ github.ref_name }}
-      - name: Install Ninja
+      - name: Install Ninja and LLVM
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           choco install --no-progress ninja
+          choco upgrade --no-progress llvm
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         env:
-          CFLAGS: ${{ env.CFLAGS }} /O2 /D _WIN32_WINNT=0x0A00
-          CXXFLAGS: ${{ env.CFLAGS }} /O2 /D _WIN32_WINNT=0x0A00
+          CC: ${{ env.CLANG }}
+          CXX: ${{ env.CLANG }}
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D _WIN32_WINNT=0x0A00
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D _WIN32_WINNT=0x0A00
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output boost.tar.gz --location "https://github.com/boostorg/boost/releases/download/boost-${{ env.boost_ver }}/boost-${{ env.boost_ver }}-cmake.tar.gz"
@@ -208,15 +226,18 @@ jobs:
         with:
           path: libtorrent
           key: libtorrent-${{ env.libtorrent_ver }}-${{ github.ref_name }}
-      - name: Install Ninja
+      - name: Install Ninja and LLVM
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         run: |
           choco install --no-progress ninja
+          choco upgrade --no-progress llvm
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
-          CFLAGS: ${{ env.CFLAGS }} /O2 /D NDEBUG
-          CXXFLAGS: ${{ env.CFLAGS }} /O2 /D NDEBUG
+          CC: ${{ env.CLANG }}
+          CXX: ${{ env.CLANG }}
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D NDEBUG
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /D NDEBUG
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
@@ -267,13 +288,16 @@ jobs:
           path: qbittorrent
           key: qbittorrent-${{ env.app_ver }}-${{ github.ref_name }}
           enableCrossOsArchive: true
-      - name: Install Ninja
+      - name: Install Ninja and LLVM
         run: |
           choco install --no-progress ninja
+          choco upgrade --no-progress llvm
       - name: Build qBittorrent
         env:
-          CFLAGS: ${{ env.CFLAGS }} /O2
-          CXXFLAGS: ${{ env.CFLAGS }} /O2
+          CC: ${{ env.CLANG }}
+          CXX: ${{ env.CLANG }}
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
