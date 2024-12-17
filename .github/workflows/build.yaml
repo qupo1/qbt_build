@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024121699
+  app_ver: 2024121750
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.2
@@ -58,9 +58,7 @@ jobs:
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
           CC: ${{ env.CLANG }}
-          CXX: ${{ env.CLANG }}
           CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
-          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output zlib.tar.gz --location "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.zlib_ver }}.tar.gz"
@@ -89,8 +87,8 @@ jobs:
       - name: Build OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
         env:
+          ASFLAGS: /guard:ehcont
           CFLAGS: ${{ env.CFLAGS }} /MP /Zc:preprocessor
-          CXXFLAGS: ${{ env.CFLAGS }} /MP /Zc:preprocessor
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           curl.exe --output openssl.tar.gz --location "https://github.com/openssl/openssl/releases/download/openssl-${{ env.openssl_ver }}/openssl-${{ env.openssl_ver }}.tar.gz"
@@ -98,9 +96,9 @@ jobs:
           mv openssl-${{ env.openssl_ver }} openssl_source
           mkdir openssl_build
           cd openssl_build
-          perl %GITHUB_WORKSPACE%\openssl_source\Configure VC-WIN64A-masm --release no-apps no-asm no-autoload-config ^
+          perl %GITHUB_WORKSPACE%\openssl_source\Configure VC-WIN64A-masm --release no-apps no-autoload-config ^
             no-cmp no-cms no-comp no-docs no-dso no-dynamic-engine no-filenames no-gost no-legacy no-makedepend no-module ^
-            no-nextprotoneg no-srp no-srtp enable-pie no-ssl-trace no-tests threads no-ssl no-tls1 no-tls1_1 no-dtls1 ^
+            no-nextprotoneg no-srp no-srtp enable-pie no-ssl-trace no-tests threads no-ssl no-tls1 no-tls1_1 no-dtls ^
             no-aria no-camellia no-cast no-md4 no-rmd160 no-sm2 no-sm3 no-sm4 no-whirlpool
           nmake /E /S
       - name: Install OpenSSL
@@ -114,7 +112,6 @@ jobs:
           mv openssl_build/include/openssl/*.h openssl/include/openssl/
           mv openssl_build/libcrypto* openssl/lib/
           mv openssl_build/libssl* openssl/lib/
-          find openssl/
   build-qt:
     name: Build Qt
     needs: build-zlib
@@ -298,6 +295,7 @@ jobs:
           CXX: ${{ env.CLANG }}
           CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
           CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }}
+          LDFLAGS: ${{ env.LDFLAGS }} /MANIFEST:NO
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
           git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
@@ -312,6 +310,8 @@ jobs:
             -DLibtorrentRasterbar_DIR="${{ github.workspace }}\libtorrent\lib\cmake\LibtorrentRasterbar"
           cmake --build . --parallel
           cmake --install .
+          cd ..\..\
+          mt.exe -manifest qbittorrent_source\src\qbittorrent.exe.manifest -outputresource:qbittorrent\bin\qbittorrent.exe;#1
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
