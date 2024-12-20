@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024122035
+  app_ver: 2024122036
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.2
@@ -171,7 +171,7 @@ jobs:
             -no-feature-freetype -no-feature-harfbuzz -no-feature-vkgen -no-feature-tuiotouch -no-feature-xcb -no-feature-textodfwriter ^
             -no-feature-pdf -no-feature-dtls -no-feature-ocsp -no-feature-brotli -no-feature-sspi -no-feature-gtk3 ^
             -no-feature-qmake -no-feature-androiddeployqt -no-feature-clang -no-feature-windeployqt ^
-            CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON
+            CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON QT_FORCE_FEATURE_x86intrin=ON
           cmake --build . --parallel
           cmake --install .
   build-boost:
