@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024122010
+  app_ver: 2024122020
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.2
@@ -162,8 +162,8 @@ jobs:
           call ..\qt_source\configure.bat -prefix "../qt" -release -static -platform win32-clang-msvc -no-sbom -ltcg -intelcet ^
             -disable-deprecated-up-to 0x060500 -no-vcpkg -submodules qtbase,qtsvg,qttools -nomake examples -nomake tests ^
             -no-freetype -no-harfbuzz -no-egl -no-libudev -no-evdev -no-libinput -no-mtdev -no-tslib -no-xkbcommon -no-gif -no-libpng -no-libjpeg ^
-            -no-dbus -no-glib -no-inotify -no-icu -system-zlib -no-system-proxies -no-fontconfig -no-gtk -no-opengl -no-syslog -no-libb2 -no-vulkan ^
-            -no-xcb-xlib -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-mimer -no-trace -no-libmd4c -no-openvg ^
+            -no-dbus -no-glib -no-inotify -no-icu -system-zlib -no-system-proxies -no-fontconfig -no-gtk -no-opengl -no-syslog -no-libb2 ^
+            -no-xcb-xlib -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-mimer -no-trace -no-libmd4c ^
             -sql-sqlite -c++std c++20 -no-feature-printsupport -no-feature-testlib -no-feature-assistant -no-feature-qdoc ^
             -no-feature-designer -no-feature-distancefieldgenerator -no-feature-pixeltool -no-feature-qdbus -no-openssl ^
             -no-feature-qtattributionsscanner -no-feature-qtdiag -no-feature-qtplugininfo -no-feature-slog2 -no-feature-gestures ^
@@ -243,7 +243,10 @@ jobs:
         shell: bash
         run: |
           git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
-          sed -i '181,184d;186d;188,205d' libtorrent_source/src/ssl.cpp
+          cd libtorrent_source
+          sed -i '181,184d' src/ssl.cpp
+          sed -i '182d' src/ssl.cpp
+          sed -i '183,201d' src/ssl.cpp
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
