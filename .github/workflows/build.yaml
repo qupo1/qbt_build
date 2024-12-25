@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024122510
+  app_ver: 2024122520
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.2
@@ -161,7 +161,7 @@ jobs:
           mkdir qt_build
           cd qt_build
           call ..\qt_source\configure.bat -prefix "../qt" -release -static -platform win32-clang-msvc -no-sbom -ltcg -intelcet ^
-            -disable-deprecated-up-to 0x060700 -no-vcpkg -submodules qtbase,qtsvg,qttools -nomake examples -nomake tests ^
+            -disable-deprecated-up-to 0x060500 -no-vcpkg -submodules qtbase,qtsvg,qttools -nomake examples -nomake tests ^
             -no-freetype -no-harfbuzz -no-egl -no-libudev -no-evdev -no-libinput -no-mtdev -no-tslib -no-xkbcommon -no-gif -no-libjpeg ^
             -no-dbus -no-glib -no-inotify -no-icu -system-zlib -no-system-proxies -no-fontconfig -no-gtk -no-opengl -no-vulkan -no-libb2 ^
             -no-xcb-xlib -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-mimer -no-syslog -no-trace -no-libmd4c ^
