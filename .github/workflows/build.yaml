@@ -10,12 +10,12 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2024122600
+  app_ver: 2025010100
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
-  zlib_ver: 2.2.2
+  zlib_ver: 2.2.3
   openssl_ver: 3.4.0
-  qt_ver: 6.8.1
+  qt_ver: 6.8
   boost_ver: 1.87.0
   libtorrent_ver: 20241210
   vcvarsall: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
