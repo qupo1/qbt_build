@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2025010100
+  app_ver: 2025011100
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.3
@@ -21,7 +21,6 @@ env:
   vcvarsall: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
   CFLAGS: /nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG
   LDFLAGS: /NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT
-  CMAKE_STRIP: "C:/Program Files/LLVM/bin/llvm-strip.exe"
   CLANG: "C:/Program Files/LLVM/bin/clang-cl.exe"
   CLANG_FLAGS: -fcf-protection=full -flto=full /clang:-fuse-ld=lld /clang:-fstack-protector-strong /clang:-fstrict-flex-arrays=3 /clang:-fno-delete-null-pointer-checks /clang:-ftrivial-auto-var-init=zero
 
@@ -42,7 +41,7 @@ jobs:
   build-zlib:
     name: Build zlib
     needs: delete-caches
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Cache zlib
         id: cache-zlib
@@ -69,7 +68,7 @@ jobs:
           cmake . -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_INSTALL_PREFIX="../zlib" ^
             -DZLIB_COMPAT=ON -DZLIB_ENABLE_TESTS=OFF -DZLIBNG_ENABLE_TESTS=OFF -DWITH_GTEST=OFF
           cmake --build . --parallel
-          cmake --install . --strip
+          cmake --install .
           cd ..
           del zlib\bin\zlib1.dll
           del zlib\lib\zlib.lib
@@ -77,7 +76,7 @@ jobs:
   build-openssl:
     name: Build OpenSSL
     needs: delete-caches
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Cache OpenSSL
         id: cache-openssl
@@ -117,7 +116,7 @@ jobs:
   build-qt:
     name: Build Qt
     needs: build-zlib
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Restore zlib
         uses: actions/cache@v4
@@ -140,7 +139,7 @@ jobs:
         run: |
           git clone --branch ${{ env.qt_ver }} --depth 1 https://code.qt.io/qt/qt5.git qt_source
           cd qt_source
-          call .\init-repository.bat --quiet --no-optional-deps --module-subset=qtbase,qtsvg,qttools
+          call .\init-repository.bat --quiet --no-optional-deps --module-subset=qtbase,qtsvg,qttools --branch
       - name: Modify Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
         shell: bash
@@ -174,11 +173,11 @@ jobs:
             -no-feature-qmake -no-feature-androiddeployqt -no-feature-clang -no-feature-windeployqt ^
             CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON QT_FORCE_FEATURE_x86intrin=ON
           cmake --build . --parallel
-          cmake --install . --strip
+          cmake --install .
   build-boost:
     name: Build Boost
     needs: delete-caches
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Cache Boost
         id: cache-boost
@@ -212,11 +211,11 @@ jobs:
             -DBOOST_LOCALE_ENABLE_ICONV=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG_CACHED=OFF ^
             -DCMAKE_CXX_STANDARD=20 -DOPENSSL_ROOT_DIR="../../openssl"
           cmake --build . --parallel
-          cmake --install . --strip
+          cmake --install .
   build-libtorrent:
     name: Build libtorrent
     needs: [build-openssl, build-boost]
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Restore OpenSSL
         uses: actions/cache@v4
@@ -266,11 +265,11 @@ jobs:
             -Dstatic_runtime=OFF -DOPENSSL_ROOT_DIR="${{ github.workspace}}\openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
             -DBOOST_ROOT="${{ github.workspace }}\boost"
           cmake --build . --parallel
-          cmake --install . --strip
+          cmake --install .
   build-qbittorrent:
     name: Build qBittorrent
     needs: [build-qt, build-libtorrent]
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: Restore zlib
         uses: actions/cache@v4
@@ -328,7 +327,7 @@ jobs:
             -DBOOST_ROOT="${{ github.workspace }}\boost" -DCMAKE_PREFIX_PATH="${{ github.workspace }}\qt" ^
             -DLibtorrentRasterbar_DIR="${{ github.workspace }}\libtorrent\lib\cmake\LibtorrentRasterbar"
           cmake --build . --parallel
-          cmake --install . --strip
+          cmake --install .
           cd ..\..\
           mt.exe -manifest qbittorrent_source\src\qbittorrent.exe.manifest -outputresource:qbittorrent\bin\qbittorrent.exe;#1
       - name: Upload artifacts
