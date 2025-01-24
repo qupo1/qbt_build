@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2025012400
+  app_ver: 2025012401
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.3
@@ -52,8 +52,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         run: |
-          winget install Ninja-build.Ninja
-          winget upgrade LLVM.LLVM
+          winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Build zlib
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
@@ -132,8 +132,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          winget install Ninja-build.Ninja
-          winget upgrade LLVM.LLVM
+          winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Fetch Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
@@ -188,8 +188,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
-          winget install Ninja-build.Ninja
-          winget upgrade LLVM.LLVM
+          winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         env:
@@ -236,8 +236,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         run: |
-          winget install Ninja-build.Ninja
-          winget upgrade LLVM.LLVM
+          winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Get libtorrent sources
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
@@ -305,8 +305,8 @@ jobs:
           enableCrossOsArchive: true
       - name: Install Ninja and LLVM
         run: |
-          winget install Ninja-build.Ninja
-          winget upgrade LLVM.LLVM
+          winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Build qBittorrent
         env:
           CC: ${{ env.CLANG }}
