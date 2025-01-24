@@ -10,14 +10,14 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2025011100
+  app_ver: 2025012400
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.3
   openssl_ver: 3.4.0
   qt_ver: 6.8
   boost_ver: 1.87.0
-  libtorrent_ver: 20241210
+  libtorrent_ver: 20250123
   vcvarsall: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
   CFLAGS: /nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG
   LDFLAGS: /NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT
@@ -52,8 +52,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         run: |
-          choco install --no-progress ninja
-          choco upgrade --no-progress llvm
+          winget install Ninja-build.Ninja
+          winget upgrade LLVM.LLVM
       - name: Build zlib
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
@@ -132,8 +132,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          choco install --no-progress ninja
-          choco upgrade --no-progress llvm
+          winget install Ninja-build.Ninja
+          winget upgrade LLVM.LLVM
       - name: Fetch Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
@@ -161,14 +161,14 @@ jobs:
           cd qt_build
           call ..\qt_source\configure.bat -prefix "../qt" -release -static -platform win32-clang-msvc -no-sbom -ltcg -intelcet ^
             -disable-deprecated-up-to 0x060500 -no-vcpkg -submodules qtbase,qtsvg,qttools -nomake examples -nomake tests ^
-            -no-freetype -no-harfbuzz -no-egl -no-libudev -no-evdev -no-libinput -no-mtdev -no-tslib -no-xkbcommon -no-gif -no-libjpeg ^
+            -no-freetype -no-egl -no-libudev -no-evdev -no-libinput -no-mtdev -no-tslib -no-xkbcommon -no-gif -no-libjpeg ^
             -no-dbus -no-glib -no-inotify -no-icu -system-zlib -no-system-proxies -no-fontconfig -no-gtk -no-opengl -no-vulkan -no-libb2 ^
             -no-xcb-xlib -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-mimer -no-syslog -no-trace -no-libmd4c ^
             -sql-sqlite -c++std c++20 -no-feature-printsupport -no-feature-testlib -no-feature-assistant -no-feature-qdoc ^
             -no-feature-designer -no-feature-distancefieldgenerator -no-feature-pixeltool -no-feature-qdbus -no-openssl ^
             -no-feature-qtattributionsscanner -no-feature-qtdiag -no-feature-qtplugininfo -no-feature-slog2 -no-feature-gestures ^
             -no-feature-jalalicalendar -no-feature-hijricalendar -no-feature-permissions -no-feature-accessibility ^
-            -no-feature-freetype -no-feature-harfbuzz -no-feature-vkgen -no-feature-tuiotouch -no-feature-xcb -no-feature-textodfwriter ^
+            -no-feature-freetype -no-feature-vkgen -no-feature-tuiotouch -no-feature-xcb -no-feature-textodfwriter ^
             -no-feature-pdf -no-feature-dtls -no-feature-ocsp -no-feature-brotli -no-feature-sspi -no-feature-gtk3 ^
             -no-feature-qmake -no-feature-androiddeployqt -no-feature-clang -no-feature-windeployqt ^
             CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON QT_FORCE_FEATURE_x86intrin=ON
@@ -188,8 +188,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
-          choco install --no-progress ninja
-          choco upgrade --no-progress llvm
+          winget install Ninja-build.Ninja
+          winget upgrade LLVM.LLVM
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         env:
@@ -236,8 +236,8 @@ jobs:
       - name: Install Ninja and LLVM
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         run: |
-          choco install --no-progress ninja
-          choco upgrade --no-progress llvm
+          winget install Ninja-build.Ninja
+          winget upgrade LLVM.LLVM
       - name: Get libtorrent sources
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
@@ -305,8 +305,8 @@ jobs:
           enableCrossOsArchive: true
       - name: Install Ninja and LLVM
         run: |
-          choco install --no-progress ninja
-          choco upgrade --no-progress llvm
+          winget install Ninja-build.Ninja
+          winget upgrade LLVM.LLVM
       - name: Build qBittorrent
         env:
           CC: ${{ env.CLANG }}
