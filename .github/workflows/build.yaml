@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2025052602
+  app_ver: 2025052610
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.4
