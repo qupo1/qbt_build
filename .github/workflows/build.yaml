@@ -10,13 +10,13 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: 2025030800
+  app_ver: 2025052610
   force_rebuild: true
   winsdk_ver: 10.0.26100.0
   zlib_ver: 2.2.4
-  openssl_ver: 3.4.1
+  openssl_ver: 3.5.0
   qt_ver: 6.9
-  boost_ver: 1.87.0
+  boost_ver: 1.88.0.beta1
   vcvarsall: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
   CFLAGS: /nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG
   LDFLAGS: /NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT
