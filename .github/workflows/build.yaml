@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025060731'
+  app_ver: '2025060740'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
@@ -307,8 +307,8 @@ jobs:
         env:
           CC: ${{ env.CLANG }}
           CXX: ${{ env.CLANG }}
-          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-march=alderlake
-          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-march=alderlake
+          CFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-march=alderlake /D QT_NO_EXCEPTIONS /D QT_NO_DEBUG
+          CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-march=alderlake /D QT_NO_EXCEPTIONS /D QT_NO_DEBUG
           LDFLAGS: ${{ env.LDFLAGS }} /MANIFEST:NO
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
