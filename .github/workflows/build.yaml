@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025060730'
+  app_ver: '2025060731'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
@@ -298,6 +298,11 @@ jobs:
         run: |
           winget install --id Ninja-build.Ninja --source winget
           winget upgrade --id LLVM.LLVM --source winget
+      - name: Get qBittorrent source
+        shell: bash
+        run: |
+          git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
+          sed -i '23s/060600/060500/' qbittorrent_source/cmake/Modules/CommonConfig.cmake
       - name: Build qBittorrent
         env:
           CC: ${{ env.CLANG }}
@@ -307,7 +312,6 @@ jobs:
           LDFLAGS: ${{ env.LDFLAGS }} /MANIFEST:NO
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
-          git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
           cd qbittorrent_source
           mkdir _build
           cd _build
