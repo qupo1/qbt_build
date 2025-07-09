@@ -10,12 +10,12 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025060740'
+  app_ver: '2025070900'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
-  openssl_ver: '3.5.0'
-  qt_ver: '6.9'
+  openssl_ver: '3.5.1'
+  qt_ver: '6.10'
   boost_ver: '1.88.0.beta1'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
   CFLAGS: '/nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG'
@@ -52,7 +52,6 @@ jobs:
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
-          winget upgrade --id LLVM.LLVM --source winget
       - name: Build zlib
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
@@ -98,8 +97,8 @@ jobs:
           perl %GITHUB_WORKSPACE%\openssl_source\Configure VC-WIN64A-masm --release --api=1.1.1 no-apps no-autoload-config ^
             no-cmp no-cms no-comp no-docs no-dso no-dynamic-engine no-filenames no-gost no-legacy no-makedepend no-module ^
             no-nextprotoneg no-srp no-srtp enable-pie no-ssl-trace no-tests threads no-ssl no-tls1 no-tls1_1 no-dtls ^
-            no-deprecated no-autoerrinit no-ct no-err no-http no-ocsp no-rfc3779 no-ui-console no-ssl3-method ^
-            no-aria no-camellia no-cast no-idea no-md4 no-mdc2 no-rc2 no-rmd160 no-sm2 no-sm3 no-sm4 no-whirlpool
+            no-deprecated no-autoerrinit no-ct no-err no-http no-ocsp no-rfc3779 no-ui-console no-quic no-ssl3-method ^
+            no-aria no-bf no-camellia no-cast no-des no-idea no-md4 no-mdc2 no-ocb no-rc2 no-rmd160 no-sm2 no-sm3 no-sm4 no-whirlpool
           nmake /E /S
       - name: Install OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
@@ -132,11 +131,10 @@ jobs:
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
-          winget upgrade --id LLVM.LLVM --source winget
       - name: Fetch Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          git clone --branch ${{ env.qt_ver }} --depth 1 https://code.qt.io/qt/qt5.git qt_source
+          git clone --branch ${{ env.qt_ver }} --depth 1 https://github.com/qt/qt5.git qt_source
           cd qt_source
           call .\init-repository.bat --quiet --no-optional-deps --module-subset=qtbase,qtsvg,qttools --branch
       - name: Build Qt
@@ -180,7 +178,6 @@ jobs:
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
-          winget upgrade --id LLVM.LLVM --source winget
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         env:
@@ -228,7 +225,6 @@ jobs:
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
-          winget upgrade --id LLVM.LLVM --source winget
       - name: Get libtorrent sources
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
@@ -297,7 +293,6 @@ jobs:
       - name: Install Ninja and LLVM
         run: |
           winget install --id Ninja-build.Ninja --source winget
-          winget upgrade --id LLVM.LLVM --source winget
       - name: Get qBittorrent source
         shell: bash
         run: |
@@ -321,6 +316,7 @@ jobs:
             -DOPENSSL_ROOT_DIR="${{ github.workspace }}\openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
             -DBOOST_ROOT="${{ github.workspace }}\boost" -DCMAKE_PREFIX_PATH="${{ github.workspace }}\qt" ^
             -DLibtorrentRasterbar_DIR="${{ github.workspace }}\libtorrent\lib\cmake\LibtorrentRasterbar"
+          cmake --build . --target qbt_update_translations
           cmake --build . --parallel
           cmake --install .
           cd ..\..\
