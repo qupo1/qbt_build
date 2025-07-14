@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025070900'
+  app_ver: '2025071410'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
@@ -196,7 +196,7 @@ jobs:
           cd _build
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_INSTALL_PREFIX="../../boost" ^
             -DBOOST_ENABLE_PYTHON=OFF -DBOOST_INSTALL_LAYOUT=system -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=OFF -DBOOST_LOCALE_ENABLE_ICU=OFF ^
-            -DBOOST_LOCALE_ENABLE_ICONV=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG_CACHED=OFF ^
+            -DBOOST_LOCALE_ENABLE_ICONV=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG=OFF -DBOOST_STACKTRACE_ENABLE_WINDBG_CACHED=OFF -DBOOST_RUNTIME_LINK=static ^
             -DCMAKE_CXX_STANDARD=20 -DOPENSSL_ROOT_DIR="../../openssl"
           cmake --build . --parallel
           cmake --install .
