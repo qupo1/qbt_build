@@ -10,13 +10,13 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025071401'
+  app_ver: '2025071410'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
   openssl_ver: '3.5.1'
   qt_ver: '6.10'
-  boost_ver: '1.89.0'
+  boost_ver: '1.88.0.beta1'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
   CFLAGS: '/nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG'
   LDFLAGS: '/NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT'
@@ -188,7 +188,9 @@ jobs:
           CXXFLAGS: ${{ env.CFLAGS }} ${{ env.CLANG_FLAGS }} /clang:-march=alderlake /D _WIN32_WINNT=0x0A00 /D BOOST_NO_DEPRECATED /D BOOST_SYSTEM_NO_DEPRECATED
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
-          git clone --depth 1 --recurse-submodules "https://github.com/boostorg/boost.git" boost_source
+          curl.exe --output boost.tar.gz --location "https://github.com/boostorg/boost/releases/download/boost-${{ env.boost_ver }}/boost-${{ env.boost_ver }}-cmake.tar.gz"
+          tar xf boost.tar.gz
+          mv boost-${{ env.boost_ver }} boost_source
           cd boost_source
           mkdir _build
           cd _build
