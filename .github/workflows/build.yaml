@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025071400'
+  app_ver: '2025071401'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.2.4'
@@ -329,7 +329,6 @@ jobs:
     needs: build-qbittorrent
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
-      actions: write
       contents: write
     runs-on: ubuntu-latest
     steps:
@@ -346,5 +345,3 @@ jobs:
         run: |
           gh release create ${{ env.app_ver }} --repo ${{ github.repository }}
           gh release upload ${{ env.app_ver }} --repo ${{ github.repository }} qbittorrent/bin/qbittorrent.exe
-          gh run list --repo ${{ github.repository }} --json databaseId --jq '.[].databaseId' | xargs -I dbID\
-            "gh run delete --repo ${{ github.repository }} dbID"
