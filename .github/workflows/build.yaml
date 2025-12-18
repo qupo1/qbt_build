@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025121800'
+  app_ver: '2025121801'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.2'
@@ -65,7 +65,7 @@ jobs:
           mv zlib-ng-${{ env.zlib_ver }} zlib_build
           cd zlib_build
           cmake . -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_INSTALL_PREFIX="../zlib" ^
-            -DZLIB_COMPAT=ON -DZLIB_ENABLE_TESTS=OFF -DZLIBNG_ENABLE_TESTS=OFF -DWITH_GTEST=OFF
+            -DZLIB_COMPAT=ON -DBUILD_TESTING=OFF -DWITH_GTEST=OFF
           cmake --build . --parallel
           cmake --install .
           cd ..
@@ -326,7 +326,7 @@ jobs:
           cd ..\..\
           mt.exe -manifest qbittorrent_source\src\qbittorrent.exe.manifest -outputresource:qbittorrent\bin\qbittorrent.exe;#1
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: qBittorrent-${{ env.app_ver }}
           path: qbittorrent
