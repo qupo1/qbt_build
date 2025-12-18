@@ -10,13 +10,13 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2025081500'
+  app_ver: '2025121800'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
-  zlib_ver: '2.2.5'
-  openssl_ver: '3.5.2'
-  qt_ver: '6.10'
-  boost_ver: '1.89.0'
+  zlib_ver: '2.3.2'
+  openssl_ver: '3.6.0'
+  qt_ver: '6.11'
+  boost_ver: '1.90.0'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
   CFLAGS: '/nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG /D _WIN32_WINNT=0x0A00'
   LDFLAGS: '/NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT'
@@ -26,7 +26,7 @@ env:
 jobs:
   delete-caches:
     name: Delete caches (if on main branch)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       actions: write
     steps:
@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Cache zlib
         id: cache-zlib
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: zlib
           key: zlib-${{ env.zlib_ver }}-${{ github.ref_name }}
@@ -52,6 +52,7 @@ jobs:
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Build zlib
         if: steps.cache-zlib.outputs.cache-hit != 'true'
         env:
@@ -78,7 +79,7 @@ jobs:
     steps:
       - name: Cache OpenSSL
         id: cache-openssl
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: openssl
           key: openssl-${{ env.openssl_ver }}-${{ github.ref_name }}
@@ -117,13 +118,13 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Restore zlib
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: zlib
           key: zlib-${{ env.zlib_ver }}-${{ github.ref_name }}
       - name: Cache Qt
         id: cache-qt
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: qt
           key: qt-${{ env.qt_ver }}-${{ github.ref_name }}
@@ -131,6 +132,7 @@ jobs:
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Fetch Qt sources
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
@@ -170,7 +172,7 @@ jobs:
     steps:
       - name: Cache Boost
         id: cache-boost
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: boost
           key: boost-${{ env.boost_ver }}-${{ github.ref_name }}
@@ -178,6 +180,7 @@ jobs:
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Build Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         env:
@@ -206,18 +209,18 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Restore OpenSSL
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: openssl
           key: openssl-${{ env.openssl_ver }}-${{ github.ref_name }}
       - name: Restore Boost
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: boost
           key: boost-${{ env.boost_ver }}-${{ github.ref_name }}
       - name: Cache libtorrent
         id: cache-libtorrent
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: libtorrent
           key: libtorrent-${{ github.ref_name }}
@@ -225,6 +228,7 @@ jobs:
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         run: |
           winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Get libtorrent sources
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
@@ -259,33 +263,33 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Restore zlib
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: zlib
           key: zlib-${{ env.zlib_ver }}-${{ github.ref_name }}
       - name: Restore OpenSSL
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: openssl
           key: openssl-${{ env.openssl_ver }}-${{ github.ref_name }}
       - name: Restore Qt
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: qt
           key: qt-${{ env.qt_ver }}-${{ github.ref_name }}
       - name: Restore Boost
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: boost
           key: boost-${{ env.boost_ver }}-${{ github.ref_name }}
       - name: Restore libtorrent
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: libtorrent
           key: libtorrent-${{ github.ref_name }}
       - name: Cache qBittorrent (if on main branch)
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: qbittorrent
           key: qbittorrent-${{ env.app_ver }}-${{ github.ref_name }}
@@ -293,11 +297,11 @@ jobs:
       - name: Install Ninja and LLVM
         run: |
           winget install --id Ninja-build.Ninja --source winget
+          winget upgrade --id LLVM.LLVM --source winget
       - name: Get qBittorrent source
         shell: bash
         run: |
           git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
-          sed -i '23s/060600/060500/' qbittorrent_source/cmake/Modules/CommonConfig.cmake
       - name: Build qBittorrent
         env:
           CC: ${{ env.CLANG }}
@@ -332,10 +336,10 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Restore qBittorrent
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: qbittorrent
           key: qbittorrent-${{ env.app_ver }}-${{ github.ref_name }}
