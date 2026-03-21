@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026032000'
+  app_ver: '2026032101'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -234,10 +234,6 @@ jobs:
         shell: bash
         run: |
           git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
-          cd libtorrent_source
-          sed -i '181,184d' src/ssl.cpp
-          sed -i '182d' src/ssl.cpp
-          sed -i '183,201d' src/ssl.cpp
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
