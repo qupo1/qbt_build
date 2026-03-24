@@ -14,8 +14,8 @@ GPLv3
   - `-fstrict-flex-arrays=3`
   - `-ftrivial-auto-var-init=zero`
   - `-fno-delete-null-pointer-checks`
-- Targets newer CPU (Intel alderlake or later)
-  - `-march=alderlake`
+- Targets newer CPU (x86-64-v3)
+  - `-march=x86-64-v3`
 - Uses Full LTO
 ## Dependencies
 - Boost
