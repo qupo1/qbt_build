@@ -10,13 +10,13 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026032401'
+  app_ver: '2026042700'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
-  openssl_ver: '3.6.1'
+  openssl_ver: '4.0.0'
   qt_ver: '6.11'
-  boost_ver: '1.90.0'
+  boost_ver: '1.91.0-1'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
   CFLAGS: '/nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG /D _WIN32_WINNT=0x0A00'
   LDFLAGS: '/NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT'
@@ -96,9 +96,9 @@ jobs:
           mkdir openssl_build
           cd openssl_build
           perl %GITHUB_WORKSPACE%\openssl_source\Configure VC-WIN64A-masm --release --api=1.1.1 no-apps no-autoload-config ^
-            no-cmp no-cms no-comp no-docs no-dso no-dynamic-engine no-filenames no-gost no-legacy no-makedepend no-module ^
-            no-nextprotoneg no-srp no-srtp enable-pie no-ssl-trace no-tests threads no-ssl no-tls1 no-tls1_1 no-dtls ^
-            no-deprecated no-autoerrinit no-ct no-err no-http no-ocsp no-rfc3779 no-ui-console no-quic no-ssl3-method ^
+            no-cmp no-cms no-comp no-docs no-dso no-filenames no-gost no-legacy no-makedepend no-module ^
+            no-nextprotoneg no-srp no-srtp enable-pie no-ssl-trace no-tests threads no-tls1 no-tls1_1 no-dtls ^
+            no-deprecated no-autoerrinit no-ct no-err no-http no-ocsp no-rfc3779 no-ui-console no-quic ^
             no-aria no-bf no-camellia no-cast no-des no-idea no-md4 no-mdc2 no-ocb no-rc2 no-rmd160 no-sm2 no-sm3 no-sm4 no-whirlpool
           nmake /E /S
       - name: Install OpenSSL
@@ -233,7 +233,7 @@ jobs:
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
+          git clone --branch RC_2_1 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
