@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026042800'
+  app_ver: '2026050300'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -233,7 +233,7 @@ jobs:
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          git clone --branch RC_2_1 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
+          git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
