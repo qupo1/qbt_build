@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026050300'
+  app_ver: '2026050601'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -19,7 +19,7 @@ env:
   boost_ver: '1.91.0-1'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
   CFLAGS: '/nologo /O2 /Ot /Gw /bigobj /utf-8 /JMC- /GS /Gs /guard:cf /guard:ehcont /W0 /D NDEBUG /D _WIN32_WINNT=0x0A00'
-  LDFLAGS: '/NOLOGO /Brepro /OPT:REF,ICF /DEBUG:NONE /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT'
+  LDFLAGS: '/NOLOGO /Brepro /OPT:REF,ICF /DEBUG /RELEASE /DYNAMICBASE /HIGHENTROPYVA /LARGEADDRESSAWARE /NXCOMPAT /CETCOMPAT /GUARD:CF /GUARD:EHCONT'
   CLANG: '"C:/Program Files/LLVM/bin/clang-cl.exe"'
   CLANG_FLAGS: '-fcf-protection=full -flto=full /clang:-fuse-ld=lld /clang:-fstack-protector-strong /clang:-fstrict-flex-arrays=3 /clang:-fno-delete-null-pointer-checks /clang:-ftrivial-auto-var-init=zero'
 
@@ -233,7 +233,7 @@ jobs:
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          git clone --branch RC_2_0 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
+          git clone --branch RC_2_1 --depth 1 --recurse-submodules https://github.com/arvidn/libtorrent.git libtorrent_source
       - name: Build libtorrent
         if: steps.cache-libtorrent.outputs.cache-hit != 'true'
         env:
@@ -310,8 +310,8 @@ jobs:
           cd qbittorrent_source
           mkdir _build
           cd _build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_CXX_STANDARD=23 ^
-            -DCMAKE_INSTALL_PREFIX="../../qbittorrent" -DDBUS=OFF -DMSVC_RUNTIME_DYNAMIC=ON -DSTACKTRACE=OFF -DWEBUI=OFF ^
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} -DCMAKE_CXX_STANDARD=23 ^
+            -DCMAKE_INSTALL_PREFIX="../../qbittorrent" -DDBUS=OFF -DMSVC_RUNTIME_DYNAMIC=ON -DSTACKTRACE=ON -DWEBUI=OFF ^
             -DZLIB_ROOT="${{ github.workspace }}\zlib" -DZLIB_USE_STATIC_LIBS=ON ^
             -DOPENSSL_ROOT_DIR="${{ github.workspace }}\openssl" -DOPENSSL_USE_STATIC_LIBS=ON ^
             -DBOOST_ROOT="${{ github.workspace }}\boost" -DCMAKE_PREFIX_PATH="${{ github.workspace }}\qt" ^
@@ -347,3 +347,4 @@ jobs:
         run: |
           gh release create ${{ env.app_ver }} --repo ${{ github.repository }}
           gh release upload ${{ env.app_ver }} --repo ${{ github.repository }} qbittorrent/bin/qbittorrent.exe
+          gh release upload ${{ env.app_ver }} --repo ${{ github.repository }} qbittorrent/bin/qbittorrent.pdb
