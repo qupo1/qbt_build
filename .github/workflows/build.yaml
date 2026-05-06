@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026050600'
+  app_ver: '2026050601'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -321,8 +321,6 @@ jobs:
           cmake --install . --strip
           cd ..\..\
           mt.exe -manifest qbittorrent_source\src\qbittorrent.exe.manifest -outputresource:qbittorrent\bin\qbittorrent.exe;#1
-          move qbittorrent_source\qbittorrent.pdb qbittorrent\bin\
-          dir qbittorrent\bin\
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
