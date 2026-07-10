@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026071001'
+  app_ver: '2026071002'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -167,8 +167,8 @@ jobs:
             -no-feature-freetype -no-feature-vkgen -no-feature-tuiotouch -no-feature-xcb -no-feature-textodfwriter ^
             -no-feature-pdf -no-feature-dtls -no-feature-ocsp -no-feature-brotli -no-feature-sspi -no-feature-gtk3 ^
             -no-feature-androiddeployqt -no-feature-clang -no-feature-windeployqt -feature-directwrite3 -openssl-linked ^
-            CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="${{ github.workspace }}\zlib" ZLIB_USE_STATIC_LIBS=ON QT_FORCE_FEATURE_x86intrin=ON ^
-            OPENSSL_ROOT_DIR="${{ github.workspace }}\openssl" OPENSSL_USE_STATIC_LIBS=ON
+            CMAKE_SYSTEM_VERSION=${{ env.winsdk_ver }} ZLIB_ROOT="../../zlib" ZLIB_USE_STATIC_LIBS=ON QT_FORCE_FEATURE_x86intrin=ON ^
+            OPENSSL_ROOT_DIR="../../openssl" OPENSSL_USE_STATIC_LIBS=ON
           cmake --build . --parallel
           cmake --install .
   build-boost:
