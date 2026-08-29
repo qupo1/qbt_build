@@ -10,11 +10,11 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026071010'
+  app_ver: '2026082900'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
-  openssl_ver: '4.0.1'
+  openssl_ver: '4.0.2'
   qt_ver: '6.12'
   boost_ver: '1.90.0'
   vcvarsall: 'C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
