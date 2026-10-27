@@ -16,7 +16,7 @@ GPLv3
   - `-fno-delete-null-pointer-checks`
 - Targets newer CPU (x86-64-v3)
   - `-march=x86-64-v3`
-- Uses Full LTO
+- Uses Thin LTO
 ## Dependencies
 - Boost
 - libtorrent
