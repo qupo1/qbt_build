@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026102700'
+  app_ver: '2026102701'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -304,8 +304,8 @@ jobs:
         shell: bash
         run: |
           git clone --branch master --depth 1 https://github.com/qbittorrent/qBittorrent.git qbittorrent_source
-          sed -i 's/QBT_VERSION_MINOR.+$/QBT_VERSION_MINOR 3/g' qbittorrent_source/src/base/version.h.in
-          sed -i 's/QBT_VERSION_STATUS.+$/QBT_VERSION_STATUS ""/g' qbittorrent_source/src/base/version.h.in
+          sed -i '32s/4/3/' qbittorrent_source/src/base/version.h.in
+          sed -i '35s/alpha1//' qbittorrent_source/src/base/version.h.in
           cat qbittorrent_source/src/base/version.h.in
       - name: Build qBittorrent
         env:
