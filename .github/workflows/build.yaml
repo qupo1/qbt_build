@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026103100'
+  app_ver: '2026110410'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -86,7 +86,7 @@ jobs:
       - name: Build OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
         env:
-          ASFLAGS: /guard:ehcont
+          ASFLAGS: /nologo /Zi /guard:ehcont
           CFLAGS: ${{ env.CFLAGS }} /arch:AVX2 /MP /Zc:preprocessor
         run: |
           call "${{ env.vcvarsall }}" amd64 ${{ env.winsdk_ver }}
