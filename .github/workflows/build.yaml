@@ -10,7 +10,7 @@ defaults:
   run:
     shell: cmd
 env:
-  app_ver: '2026112351'
+  app_ver: '2026112352'
   force_rebuild: true
   winsdk_ver: '10.0.26100.0'
   zlib_ver: '2.3.3'
@@ -198,7 +198,7 @@ jobs:
           tar xf boost.tar.gz
           mv boost-${{ env.boost_ver }} boost_source
           cd boost_source
-          .\bootstrap.bat && .\b2 install cxxstd=23 link=static runtime-link=shared variant=release toolset=clang-win address-model=64 --layout=system --prefix="..\boost" --without-python
+          .\bootstrap.bat && .\b2 install cxxstd=23 link=static runtime-link=shared variant=release toolset=clang-win address-model=64 --layout=system --prefix="..\boost" --without-python --without-graph_parallel --without-test
   build-libtorrent:
     name: Build libtorrent
     needs: [build-openssl, build-boost]
